@@ -1,10 +1,6 @@
-# 💾 Sistema de Balanceo MySQL con Nginx
+# Sistema de Balanceo MySQL con Nginx
 
-## 🏗️ Arquitectura del Sistema
-
-<p align="center">
-  <img src="https://i.imgur.com/Ke4rUC8.png" alt="Imagen de la arquitectura">
-</p>
+## Arquitectura del Sistema
 
 El sistema está compuesto por:
 - Un balanceador Nginx configurado para enrutar operaciones de lectura y escritura a diferentes puertos y servidores MySQL.
@@ -14,13 +10,13 @@ El sistema está compuesto por:
 
 ---
 
-## 📋 Descripción
+## Descripción
 
 **Este proyecto implementa un _balanceador de carga_ para bases de datos MySQL usando Nginx.** El objetivo es separar las operaciones de **lectura** y **escritura**: las *escrituras* se dirigen al nodo maestro y las *lecturas* se distribuyen entre los nodos esclavos. Todo el entorno se despliega de forma _automática_ con **Vagrant** y **VirtualBox**, permitiendo pruebas de rendimiento y análisis de arquitecturas distribuidas de manera sencilla y reproducible.
 
 ---
 
-## 🚀 Instalación y Puesta en Marcha
+## Instalación y Puesta en Marcha
 
 ### 1. Clonar el repositorio
 
@@ -40,11 +36,11 @@ Ejecuta en la raíz del proyecto:
 vagrant up
 ```
 
-> ⏱️ *Por favor, espera a que todas las máquinas virtuales se inicien correctamente. Esto puede tomar varios minutos.*
+> ⏱*Por favor, espera a que todas las máquinas virtuales se inicien correctamente. Esto puede tomar varios minutos.*
 
 ---
 
-## 🏗️ Monitoreo y Pruebas
+## Monitoreo y Pruebas
 
 ### Monitoreo de logs del balanceador
 
@@ -60,7 +56,7 @@ vagrant ssh nginx_balancer
 tail -f /var/log/nginx/mysql_access.log
 ```
 
-> 💡 *Mantén esta terminal abierta para observar las solicitudes mientras ejecutas las pruebas*
+> *Mantén esta terminal abierta para observar las solicitudes mientras ejecutas las pruebas*
 
 ### Ejecutando pruebas de rendimiento
 
@@ -110,7 +106,7 @@ run
 
 ---
 
-## 📈 Análisis de Resultados
+## Análisis de Resultados
 
 Observa los siguientes aspectos en los resultados de las pruebas:
 - Transacciones por segundo (TPS)
@@ -124,7 +120,7 @@ En los logs del balanceador, podrás observar:
 
 ---
 
-## 🛑 Apagado y Limpieza del Sistema
+## Apagado y Limpieza del Sistema
 
 Cuando hayas terminado las pruebas, puedes apagar las máquinas virtuales:
 
@@ -140,11 +136,11 @@ vagrant destroy
 
 ---
 
-## 📚 Información Adicional
+## Información Adicional
 
 - **Puerto 3307**: Configurado para operaciones de lectura (balanceado entre esclavos)
 - **Puerto 3308**: Configurado para operaciones de escritura (dirigido al maestro)
 
 ---
 
-*Desarrollado para pruebas de rendimiento de bases de datos MySQL❤️*
+*Desarrollado para pruebas de rendimiento de bases de datos MySQL*
