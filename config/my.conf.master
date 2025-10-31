@@ -1,0 +1,24 @@
+[mysqld]
+# Configuración mínima para el servidor MySQL (maestro)
+user = mysql
+
+# Network: permitir conexiones de red (necesario para replicación en Vagrant)
+skip-networking = false
+mysqlx-bind-address = 127.0.0.1
+
+# Performance tuning (valores modestos para entorno de pruebas)
+key_buffer_size = 16M
+myisam-recover-options = BACKUP
+
+# Logging de errores
+log_error = /var/log/mysql/error.log
+
+# Binlog / Replicación (maestro)
+# server-id único en la topología (maestro = 1)
+max_binlog_size = 100M
+server-id = 1
+log_bin = /var/log/mysql/mysql-bin.log
+binlog_format = row
+
+# Escuchar en todas las interfaces para que otras VMs puedan conectarse
+bind-address = 0.0.0.0
