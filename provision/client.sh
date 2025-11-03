@@ -8,7 +8,7 @@ echo "[INFO] Instalando sysbench..."
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y sysbench
+apt-get install -y sysbench default-mysql-client
 
 echo "[INFO] Preparando los datos para la prueba en el cliente..."
 

@@ -74,6 +74,13 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.70.12' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EOF
 
+# Permitir conexiones desde la VM cliente para pruebas (IP 192.168.70.13)
+mysql -uroot -padmin <<EOF
+CREATE USER IF NOT EXISTS 'root'@'192.168.70.13' IDENTIFIED BY 'admin';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.70.13' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EOF
+
 echo "[INFO] Creando base de datos en el maestro para probar replicación..."
 
 mysql -uroot -padmin -h 192.168.70.10 <<EOF
