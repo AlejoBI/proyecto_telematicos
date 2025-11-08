@@ -16,10 +16,11 @@ stream {
 
     access_log /var/log/nginx/mysql_access.log proxy_logs;
 
-    # Upstream para lecturas (balanceo entre maestro y esclavo)
+    # Upstream para lecturas (balanceo round-robin entre maestro y 2 esclavos)
     upstream mysql_read {
         server 192.168.70.10:3306; # Maestro
-        server 192.168.70.11:3306; # Esclavo
+        server 192.168.70.11:3306; # Esclavo 1
+        server 192.168.70.12:3306; # Esclavo 2
     }
 
     # Upstream para escrituras (solo maestro)
@@ -27,7 +28,7 @@ stream {
         server 192.168.70.10:3306; # Maestro
     }
 
-    # Puerto para lecturas: proxy hacia mysql_read
+    # Puerto 3307 para lecturas: proxy hacia mysql_read
     server {
         listen 3307;
         proxy_pass mysql_read;
@@ -35,7 +36,7 @@ stream {
         proxy_connect_timeout 1s;
     }
 
-    # Puerto para escrituras: proxy hacia mysql_write
+    # Puerto 3308 para escrituras: proxy hacia mysql_write
     server {
         listen 3308;
         proxy_pass mysql_write;

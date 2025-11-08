@@ -1,0 +1,26 @@
+[mysqld]
+# Configuración mínima para el servidor MySQL (esclavo 2)
+user = mysql
+
+# Network: permitir conexiones desde maestro y herramientas de administración
+bind-address = 0.0.0.0
+mysqlx-bind-address = 127.0.0.1
+
+# Performance tuning (valores modestos para entorno de pruebas)
+key_buffer_size = 16M
+myisam-recover-options = BACKUP
+
+# Logging de errores
+log_error = /var/log/mysql/error.log
+
+# Binlog / Replicación (esclavo 2)
+# server-id debe ser único (esclavo2 = 3)
+max_binlog_size = 100M
+server-id = 3
+log_bin = /var/log/mysql/mysql-bin.log
+relay_log = /var/log/mysql/mysql-relay-bin.log
+binlog_format = row
+
+# Habilitar red y poner el esclavo en solo lectura
+skip-networking = false
+read_only = ON

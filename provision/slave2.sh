@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script de provisioning para MySQL Slave 1
+# Script de provisioning para MySQL Slave 2
 
 # Configuración de red DNS
 sudo systemctl stop systemd-resolved
@@ -7,19 +7,19 @@ sudo systemctl disable systemd-resolved
 sudo rm -f /etc/resolv.conf
 echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
 
-echo "Instalando MySQL Server en el esclavo 1..."
+echo "Instalando MySQL Server en el esclavo 2..."
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y mysql-server
 
-echo "Configurando MySQL como esclavo 1..."
+echo "Configurando MySQL como esclavo 2..."
 systemctl stop mysql
-cp /vagrant/config/my.conf.slave /etc/mysql/mysql.conf.d/mysqld.cnf
+cp /vagrant/config/my.conf.slave2 /etc/mysql/mysql.conf.d/mysqld.cnf
 systemctl start mysql
 
 if systemctl is-active --quiet mysql; then
-    echo "MySQL está corriendo como esclavo 1."
+    echo "MySQL está corriendo como esclavo 2."
 else
     echo "MySQL no se pudo iniciar." >&2
     exit 1
@@ -46,7 +46,7 @@ fi
 echo "MASTER_LOG_FILE = $MASTER_LOG_FILE"
 echo "MASTER_LOG_POS  = $MASTER_LOG_POS"
 
-echo "Configurando esclavo 1 para replicar desde el maestro..."
+echo "Configurando esclavo 2 para replicar desde el maestro..."
 mysql -uroot -padmin <<EOF
 STOP SLAVE;
 RESET SLAVE ALL;
@@ -66,7 +66,7 @@ SLAVE_IO_RUNNING=$(mysql -uroot -padmin -e "SHOW SLAVE STATUS\G" | grep "Slave_I
 SLAVE_SQL_RUNNING=$(mysql -uroot -padmin -e "SHOW SLAVE STATUS\G" | grep "Slave_SQL_Running:" | awk '{print $2}')
 
 if [[ "$SLAVE_IO_RUNNING" == "Yes" && "$SLAVE_SQL_RUNNING" == "Yes" ]]; then
-    echo "La replicación está funcionando correctamente en esclavo 1."
+    echo "La replicación está funcionando correctamente en esclavo 2."
 else
     echo "La replicación NO está funcionando. Verifica configuración y logs." >&2
     mysql -uroot -padmin -e "SHOW SLAVE STATUS\G" | grep -E "Last_IO_Error|Last_SQL_Error"
@@ -86,6 +86,6 @@ GRANT REPLICATION CLIENT ON *.* TO 'root'@'192.168.70.14';
 FLUSH PRIVILEGES;
 EOF
 
-echo "Esclavo 1 configurado correctamente."
-echo "IP del esclavo 1: 192.168.70.11"
+echo "Esclavo 2 configurado correctamente."
+echo "IP del esclavo 2: 192.168.70.12"
 echo "Replicando desde: 192.168.70.10 (maestro)"
