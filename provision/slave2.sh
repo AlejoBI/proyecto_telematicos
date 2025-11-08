@@ -76,11 +76,11 @@ fi
 echo "Configurando acceso remoto desde balanceador y cliente..."
 mysql -uroot -padmin <<EOF
 -- Acceso desde balanceador (192.168.70.13)
-CREATE USER 'root'@'192.168.70.13' IDENTIFIED BY 'admin';
+CREATE USER IF NOT EXISTS 'root'@'192.168.70.13' IDENTIFIED BY 'admin';
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.70.13' WITH GRANT OPTION;
 
 -- Acceso desde cliente (192.168.70.14) - solo para verificar SHOW SLAVE STATUS
-CREATE USER 'root'@'192.168.70.14' IDENTIFIED BY 'admin';
+CREATE USER IF NOT EXISTS 'root'@'192.168.70.14' IDENTIFIED BY 'admin';
 GRANT REPLICATION CLIENT ON *.* TO 'root'@'192.168.70.14';
 
 FLUSH PRIVILEGES;
