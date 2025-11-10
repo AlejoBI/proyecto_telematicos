@@ -175,7 +175,7 @@ sudo ss -tlpn | grep -E ':3307|:3308'
 1. Insertar un registro con timestamp único (vía balancer puerto 3308 - escritura):
 ```bash
 TIMESTAMP=$(date +%s)
-mysql -uroot -padmin -h 192.168.70.13 -P3308 -e "USE test; INSERT INTO test (name) VALUES ('repl_test_$TIMESTAMP');"
+mysql -uroot -padmin -h 192.168.70.13 -P3308 -e "INSERT INTO test.test (name) VALUES ('repl_test_$TIMESTAMP');"
 echo "Insertado: repl_test_$TIMESTAMP"
 ```
 
@@ -183,7 +183,7 @@ echo "Insertado: repl_test_$TIMESTAMP"
 ```bash
 for i in {1..12}; do
   echo "--- Lectura $i ---"
-  mysql -uroot -padmin -h 192.168.70.13 -P3307 -e "SELECT @@hostname AS servidor, name FROM test WHERE name LIKE 'repl_test_%' ORDER BY id DESC LIMIT 1;" 2>/dev/null
+  mysql -uroot -padmin -h 192.168.70.13 -P3307 -e "SELECT @@hostname AS servidor, name FROM test.test WHERE name LIKE 'repl_test_%' ORDER BY id DESC LIMIT 1;" 2>/dev/null
   sleep 0.5
 done
 ```
@@ -456,11 +456,11 @@ watch -n 2 "mysql -uroot -padmin -e \"SHOW SLAVE STATUS\G\" | grep Seconds_Behin
 
 ```bash
 # Lectura vía balancer (puerto 3307 - balanceado entre maestro y 2 slaves)
-mysql -uroot -padmin -h 192.168.70.13 -P3307 -e "USE test; SELECT COUNT(*) FROM test;"
-mysql -uroot -padmin -h 192.168.70.13 -P3307 -e "USE test; SELECT * FROM test ORDER BY id DESC LIMIT 10;"
+mysql -uroot -padmin -h 192.168.70.13 -P3307 -e "SELECT COUNT(*) FROM test.test;"
+mysql -uroot -padmin -h 192.168.70.13 -P3307 -e "SELECT * FROM test.test ORDER BY id DESC LIMIT 10;"
 
 # Escritura vía balancer (puerto 3308 - solo maestro)
-mysql -uroot -padmin -h 192.168.70.13 -P3308 -e "USE test; INSERT INTO test (name) VALUES ('test_$(date +%s)');"
+mysql -uroot -padmin -h 192.168.70.13 -P3308 -e "INSERT INTO test.test (name) VALUES ('test_$(date +%s)');"
 
 # Sesión interactiva (para múltiples queries)
 mysql -uroot -padmin -h 192.168.70.13 -P3308
@@ -511,7 +511,7 @@ mysql -uroot -padmin -e "SHOW SLAVE STATUS\G"
 mysql -uroot -padmin -e "SHOW SLAVE STATUS\G" | grep Seconds_Behind_Master
 
 # Ver últimos datos replicados (verificación local, no desde client)
-mysql -uroot -padmin -e "USE test; SELECT * FROM test ORDER BY id DESC LIMIT 5;"
+mysql -uroot -padmin -e "SELECT * FROM test.test ORDER BY id DESC LIMIT 5;"
 
 # Simular fallo
 sudo systemctl stop mysql
