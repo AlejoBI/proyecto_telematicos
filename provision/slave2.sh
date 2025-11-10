@@ -86,6 +86,11 @@ GRANT REPLICATION CLIENT ON *.* TO 'root'@'192.168.70.14';
 FLUSH PRIVILEGES;
 EOF
 
+echo "Sincronizando bases de datos desde el maestro..."
+# Verificar si las bases de datos test y sbtest existen, si no, crearlas para que la replicación funcione
+mysql -uroot -padmin -e "CREATE DATABASE IF NOT EXISTS test;"
+mysql -uroot -padmin -e "CREATE DATABASE IF NOT EXISTS sbtest;"
+
 echo "Esclavo 2 configurado correctamente."
 echo "IP del esclavo 2: 192.168.70.12"
 echo "Replicando desde: 192.168.70.10 (maestro)"
