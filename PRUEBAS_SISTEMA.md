@@ -333,6 +333,47 @@ sudo systemctl stop mysql
 
 ---
 
+### **📊 ANÁLISIS: Límites de Recursos y Saturación del Sistema**
+
+**Observación importante**: Si ejecutas el test con 24 threads en lugar de 12, verás errores como:
+```
+FATAL: mysql_stmt_execute() returned error 2013 (Lost connection to MySQL server during query)
+```
+
+**¿Por qué falla con 24 threads pero funciona con 8-12?**
+
+1. **Recursos limitados de las VMs**:
+   - Cada VM tiene **512 MB RAM** y **1 CPU virtual** (configuración de laboratorio)
+   - MySQL necesita memoria para buffers, cache, y conexiones concurrentes
+   - Con 24 threads, hay al menos **24 conexiones activas simultáneas**
+
+2. **Saturación de memoria**:
+   - Cada conexión MySQL consume ~1-2 MB de memoria
+   - 24 conexiones × 1.5 MB = ~36 MB solo en conexiones
+   - Más el buffer pool, query cache, y sistema operativo
+   - La VM se queda sin memoria y empieza a usar swap (muy lento)
+
+3. **Saturación de CPU**:
+   - Con 1 CPU virtual, solo puede procesar ~1-2 queries en paralelo eficientemente
+   - 24 threads compiten por CPU, aumentando latencias
+   - Context switching degrada el rendimiento
+
+4. **Timeouts de conexión**:
+   - Las queries tardan demasiado en procesarse
+   - Nginx o MySQL cierran la conexión por timeout
+   - Resulta en el error 2013 "Lost connection"
+
+**Punto educativo para la presentación**:
+> "Esta es una demostración práctica de por qué el dimensionamiento de recursos es crítico en producción. Con las configuraciones actuales (512 MB RAM, 1 CPU por VM), el sistema maneja bien hasta ~12 threads concurrentes. En producción, con VMs de 4 GB RAM y 2-4 CPUs, el sistema podría manejar 50-100+ threads sin problemas."
+
+**Recomendaciones para producción**:
+- **Memoria**: Mínimo 2-4 GB por nodo MySQL
+- **CPU**: 2-4 cores por nodo
+- **max_connections**: Configurar según carga esperada (default: 151)
+- **Monitoreo**: Usar herramientas como PMM, Prometheus, Grafana
+
+---
+
 ### PRUEBA 5: Simular fallo de un slave y verificar continuidad
 
 **Objetivo**: Demostrar alta disponibilidad (sistema sigue funcionando si un slave cae).
