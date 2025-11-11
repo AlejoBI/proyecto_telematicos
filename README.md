@@ -127,7 +127,7 @@ proyecto_telematicos/
 │   ├── balancer.sh               # Setup de Nginx (instalación, configuración)
 │   └── client.sh                 # Setup del cliente (mysql-client, sysbench, prepare)
 ├── README.md                      # Este archivo - Documentación principal
-├── PRUEBAS_SISTEMA.md            # Guía detallada de pruebas (7 casos de prueba)
+├── PRUEBAS_SISTEMA.md            # Guía detallada de pruebas (6 casos de prueba)
 └── REFERENCIA_TECNICA.md         # Referencia técnica de configuración
 ```
 
@@ -402,10 +402,10 @@ vagrant up
 
 ### Para pruebas detalladas:
 Consulta **PRUEBAS_SISTEMA.md** que incluye:
-- 7 casos de prueba paso a paso
+- 6 casos de prueba paso a paso
 - Comandos completos de sysbench para diferentes escenarios
-- Simulación de fallos y recuperación
 - Análisis de resultados y métricas
+- Explicación de límites de recursos y saturación del sistema
 
 ### Para referencia técnica:
 Consulta **REFERENCIA_TECNICA.md** que incluye:

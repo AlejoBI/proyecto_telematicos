@@ -374,55 +374,7 @@ FATAL: mysql_stmt_execute() returned error 2013 (Lost connection to MySQL server
 
 ---
 
-### PRUEBA 5: Simular fallo de un slave y verificar continuidad
-
-**Objetivo**: Demostrar alta disponibilidad (sistema sigue funcionando si un slave cae).
-
-**Pasos**:
-
-1. **Ejecutar carga de fondo** (en VM `client`):
-```bash
-sysbench /usr/share/sysbench/oltp_read_only.lua \
-  --mysql-host=192.168.70.13 \
-  --mysql-port=3307 \
-  --mysql-user=root \
-  --mysql-password=admin \
-  --mysql-db=sbtest \
-  --threads=8 \
-  --time=120 \
-  --report-interval=10 \
-  run &
-```
-
-2. **Mientras corre sysbench, apagar slave1** (SSH a slave1, puerto 2211):
-```bash
-sudo systemctl stop mysql
-```
-
-3. **Observar salida de sysbench**: 
-   - Verás incremento temporal en latencia (mientras nginx detecta el fallo).
-   - Luego el sistema se estabiliza (nginx deja de enviar tráfico a slave1).
-   - Las lecturas se balancean entre maestro y slave2 únicamente.
-
-4. **Verificar logs de nginx** (en balancer):
-```bash
-sudo tail -f /var/log/nginx/error.log
-```
-Buscar mensajes tipo: `connect() failed (111: Connection refused) ... upstream: "192.168.70.11:3306"`
-
-5. **Levantar slave1 de nuevo**:
-```bash
-sudo systemctl start mysql
-mysql -uroot -padmin -e "SHOW SLAVE STATUS\G" | grep -E "Slave_IO_Running|Slave_SQL_Running"
-```
-
-**Resultado esperado**:
-- Sistema tolera la caída de 1 slave sin interrumpir el servicio (solo reduce capacidad).
-- Cuando el slave vuelve, nginx automáticamente lo incluye en el balanceo.
-
----
-
-### PRUEBA 6: Consultas SQL para verificar distribución de carga
+### PRUEBA 5: Consultas SQL para verificar distribución de carga
 
 **Objetivo**: Usar variables de MySQL para confirmar a qué servidor se conectó cada query.
 
@@ -451,7 +403,7 @@ Distribución aproximadamente equitativa entre los 3 nodos.
 
 ---
 
-### PRUEBA 7: Lag de replicación bajo carga de escritura
+### PRUEBA 6: Lag de replicación bajo carga de escritura
 
 **Objetivo**: Verificar que los slaves se mantienen sincronizados bajo escrituras intensivas.
 
